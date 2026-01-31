@@ -28,6 +28,7 @@
                     <div class="input-group-text">
                       Quantity
                     </div>
+
                     <input
                       type="number"
                       min="1"
@@ -44,6 +45,7 @@
                     Add to cart
                   </button>
                 </div>
+
               </div>
             </form>
           </p>
@@ -54,6 +56,7 @@
           <ul class="list-group">
             {% for review in template_data.reviews %}
               <li class="list-group-item pb-3 pt-3">
+
                 <h5 class="card-title">
                   Review by {{ review.user.username }}
                 </h5>
@@ -73,6 +76,7 @@
                     Delete
                   </a>
                 {% endif %}
+
               </li>
             {% endfor %}
           </ul>
@@ -83,6 +87,7 @@
                 <div class="col-12">
                   <div class="card shadow p-3 mb-4 rounded">
                     <div class="card-body">
+
                       <b class="text-start">
                         Create a review
                       </b>
@@ -101,6 +106,7 @@
                             Add Review
                           </button>
                         </div>
+
                       </form>
 
                     </div>
