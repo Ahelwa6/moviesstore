@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Movie, Review
+from .models import Movie, Review, ReviewReport
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
 
 def index(request):
     search_term = request.GET.get('search')
@@ -15,7 +17,7 @@ def index(request):
 
 def show(request, id):
     movie = Movie.objects.get(id=id)
-    reviews = Review.objects.filter(movie=movie)
+    reviews = Review.objects.filter(movie=movie, is_active=True).order_by('-date')
     template_data = {}
     template_data['title'] = movie.name
     template_data['movie'] = movie
@@ -58,4 +60,25 @@ def edit_review(request, id, review_id):
 def delete_review(request, id, review_id):
     review = get_object_or_404(Review, id=review_id, user=request.user)
     review.delete()
+    return redirect('movies.show', id=id)
+
+@login_required
+def report_review(request, id, review_id):
+    if request.method != "POST":
+        return redirect('movies.show', id=id)
+
+    movie = get_object_or_404(Movie, id=id)
+    review = get_object_or_404(Review, id=review_id, movie=movie, is_active=True)
+
+    # Optional: stop users from reporting their own review
+    if review.user_id == request.user.id:
+        messages.error(request, "You can't report your own review.")
+        return redirect('movies.show', id=id)
+
+    ReviewReport.objects.get_or_create(
+        review=review,
+        reporter=request.user
+    )
+
+    messages.success(request, "Report submitted.")
     return redirect('movies.show', id=id)

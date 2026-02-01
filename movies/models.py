@@ -16,5 +16,20 @@ class Review(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)
     def __str__(self):
         return str(self.id) + ' - ' + self.movie.name
+    
+class ReviewReport(models.Model):
+    review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="reports")
+    reporter = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    reason = models.CharField(max_length=50, blank=True)
+    details = models.TextField(blank=True)
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["review", "reporter"], name="one_report_per_user")
+        ]
+    def __str__(self):
+        return f"Report #{self.id} (review {self.review_id})"
+
